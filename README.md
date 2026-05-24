@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -34,3 +35,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+=======
+# TheGridExperience
+TheGridExperience — A premium cinematic Formula 1-inspired immersive web experience built with scroll-driven storytelling, magnetic transitions, interactive 3D environments, and dynamic motorsport atmospheres. Designed as a modern digital racing journey combining cinematic motion, engineering aesthetics, and immersive UI architecture.
+>>>>>>> fc4531715270de6da183c6029ec59516c04d0b5d
