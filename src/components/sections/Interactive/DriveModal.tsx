@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 interface DriveModalProps {
@@ -9,6 +9,7 @@ interface DriveModalProps {
 
 export default function DriveModal({ onClose }: DriveModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -41,15 +42,29 @@ export default function DriveModal({ onClose }: DriveModalProps) {
         transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
         onClick={(e) => e.stopPropagation()}
       >
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          src="/videos/drive.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
+        {videoError ? (
+          <div className="w-full h-full flex items-center justify-center bg-zinc-900">
+            <div className="text-center">
+              <p className="text-[10px] tracking-[0.3em] uppercase text-zinc-500 font-mono mb-2">
+                Experience Video
+              </p>
+              <p className="text-xs text-zinc-600 font-mono">
+                Video unavailable
+              </p>
+            </div>
+          </div>
+        ) : (
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover"
+            src="/videos/drive.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            onError={() => setVideoError(true)}
+          />
+        )}
 
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/30 via-transparent to-black/10" />
 

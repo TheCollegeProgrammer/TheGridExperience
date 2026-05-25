@@ -114,5 +114,78 @@
     "metalnessBoost": 0.1,
     "roughnessReduce": 0.05,
     "skipColors": ["#000000", "#0a0a0a", "#111111"]
+  },
+  "bloom": {
+    "enabled": true,
+    "threshold": 0.4,
+    "strength": 0.3,
+    "radius": 0.5
+  },
+  "vignette": {
+    "enabled": true,
+    "darkness": 0.65,
+    "offset": 0.35,
+    "color": "#000000",
+    "pulseDuration": 0.5
+  },
+  "nightMode": {
+    "ambientIntensity": 0.2,
+    "hemisphereIntensity": 0.15,
+    "emissiveIntensity": 1.2,
+    "rimLightColor": "#4488ff",
+    "rimLightIntensity": 1.8
+  },
+  "sepiaMode": {
+    "rimLightColor": "#d4af37",
+    "rimLightIntensity": 1.4,
+    "environmentPreset": "sunset",
+    "toneSaturation": -0.3
+  },
+  "particles": {
+    "count": 12,
+    "lifetime": 0.5,
+    "size": 0.03,
+    "opacity": 0.03,
+    "color": "#ff6b4a",
+    "spawnOffset": [0, -0.3, -1.8],
+    "spread": [0.3, 0.2, 0.4],
+    "velocity": [0, 0.6, -0.3]
+  },
+  "speedLines": {
+    "enabled": true,
+    "count": 60,
+    "length": 8,
+    "opacity": 0.08,
+    "color": "#ffffff",
+    "radius": 6
+  },
+  "hotspots": {
+    "color": "#22d3ee",
+    "pulseSpeed": 1.5,
+    "size": 0.12,
+    "opacity": 0.8,
+    "parts": [
+      {
+        "id": "front_wing",
+        "meshes": ["front_wing", "nose", "front_wing_endplate"],
+        "label": "Front Wing",
+        "description": "Generates 200 kg of downforce",
+        "position": [0.35, -0.1, 1.6]
+      },
+      {
+        "id": "halo",
+        "meshes": ["halo", "halo_structure"],
+        "label": "Halo",
+        "description": "75 kg load capacity · 90 kg weight",
+        "position": [0, 0.5, 0.4]
+      },
+      {
+        "id": "rear_wing",
+        "meshes": ["rear_wing", "rear_wing_main"],
+        "label": "Rear Wing",
+        "description": "160 kg downforce · DRS activated",
+        "position": [-0.3, 0.45, -1.6]
+      }
+    ]
   }
 }
