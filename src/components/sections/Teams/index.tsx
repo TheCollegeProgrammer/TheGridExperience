@@ -73,9 +73,6 @@ export default function TeamsSection() {
           color={active.color}
         />
 
-        {/* Top atmospheric fade */}
-        <div className="absolute inset-x-0 top-0 h-[45vh] bg-gradient-to-b from-black via-black/10 via-black/40 to-transparent z-[2]" />
-
         {/* Bottom cinematic grounding */}
         <div className="absolute inset-x-0 bottom-0 h-[55vh] bg-gradient-to-t from-black via-black/70 via-black/20 to-transparent z-[2]" />
 
@@ -110,7 +107,7 @@ export default function TeamsSection() {
         </div>
 
         {/* Bottom content */}
-        <div className="absolute bottom-0 inset-x-0 z-10 px-8 md:px-16 lg:px-24 pb-2">
+        <div className="absolute bottom-6 inset-x-0 z-10 px-8 md:px-16 lg:px-24 pb-6">
           <div className="flex items-end justify-center">
             <TeamNavigation
               teams={teams}

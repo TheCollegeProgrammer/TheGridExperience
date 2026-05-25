@@ -9,6 +9,7 @@ interface SceneCanvasProps {
   cameraPosition?: [number, number, number];
   className?: string;
   interactive?: boolean;
+  environmentPreset?: string;
 }
 
 function SceneFallback() {
@@ -20,7 +21,7 @@ function SceneFallback() {
   );
 }
 
-export default function SceneCanvas({ children, cameraPosition = [0, 0, 5], className, interactive }: SceneCanvasProps) {
+export default function SceneCanvas({ children, cameraPosition = [0, 0, 5], className, interactive, environmentPreset = "night" }: SceneCanvasProps) {
   return (
     <div className={`absolute inset-0 ${interactive ? "" : "pointer-events-none"} ${className ?? ""}`}>
       <Canvas
@@ -35,7 +36,7 @@ export default function SceneCanvas({ children, cameraPosition = [0, 0, 5], clas
       >
         <Suspense fallback={<SceneFallback />}>
           {children}
-          <Environment preset="night" />
+          <Environment preset={environmentPreset as any} />
         </Suspense>
       </Canvas>
     </div>

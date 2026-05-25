@@ -36,7 +36,7 @@ const InteractiveSection = dynamic(
 function HeroSectionShell() {
   const ref = useSectionSnap("hero", 0);
   return (
-    <section id="hero" ref={ref} data-section-index={0} className="relative w-full h-screen overflow-hidden">
+    <section id="hero" ref={ref} data-section-index={0} className="relative w-full h-screen border-x-[10px] border-b-[10px] border-transparent">
       <HeroSection />
     </section>
   );

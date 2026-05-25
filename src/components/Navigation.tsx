@@ -44,23 +44,23 @@ export default function Navigation() {
 
   return (
     <motion.nav
-      className="fixed top-0 left-0 right-0 z-50 mix-blend-difference"
+      className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-md mx-[10px]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1, delay: 1.5 }}
     >
-      <div className="flex items-center justify-between px-8 md:px-12 h-20">
-        <span className="text-sm font-bold tracking-wider text-white">F1·RB·25</span>
+      <div className="flex items-center justify-between px-8 md:px-12 h-14 w-screen">
+        <span className="text-sm font-bold tracking-wider text-white ml-4">&emsp; F1·RB·25</span>
         <div className="hidden md:flex items-center gap-8">
-          {sections.map((s) => (
+          {sections.map((s, i) => (
             <button
               key={s.id}
               onClick={() => handleNav(s.id)}
               className={`text-xs tracking-[0.2em] uppercase transition-colors duration-300 ${
                 active === s.id ? "text-white" : "text-zinc-600"
-              }`}
+              } ${i === sections.length - 1 ? "mr-4" : ""}`}
             >
-              {s.label}
+              {s.label}{i === sections.length - 1 && <>&emsp;&emsp;</>}
             </button>
           ))}
         </div>

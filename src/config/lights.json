@@ -1,0 +1,118 @@
+{
+  "car": {
+    "scale": 0.68,
+    "positionOffset": [0, -0.58, 0],
+    "entrance": {
+      "startY": -0.3,
+      "endY": 0,
+      "riseSpeed": 0.6
+    },
+    "idle": {
+      "amplitudeY": 0,
+      "speedY": 0,
+      "amplitudeRotZ": 0.0015,
+      "speedRotZ": 0.12
+    }
+  },
+  "lights": {
+    "ambient": {
+      "intensity": 0.65
+    },
+    "directional": [
+      {
+        "id": "key",
+        "label": "Main cinematic key light",
+        "position": [5, 4.5, 5],
+        "intensity": 1.8,
+        "color": "#ffffff"
+      },
+      {
+        "id": "rimCool",
+        "label": "Cool rim light (back-right)",
+        "position": [-4, 2.5, -4],
+        "intensity": 0.65,
+        "color": "#4488ff"
+      },
+      {
+        "id": "top",
+        "label": "Top fill light",
+        "position": [0, 6, 0],
+        "intensity": 0.38,
+        "color": "#ffffff"
+      }
+    ],
+    "hemisphere": {
+      "label": "Subtle sky/ground ambient",
+      "skyColor": "#1e293b",
+      "groundColor": "#020202",
+      "intensity": 0.32
+    }
+  },
+  "fog": {
+    "color": "#000000",
+    "near": 8,
+    "far": 20
+  },
+  "groundPlane": {
+    "enabled": true,
+    "size": 12,
+    "positionY": -0.35,
+    "color": "#000000",
+    "metalness": 0.45,
+    "roughness": 0.42,
+    "opacity": 0.22
+  },
+  "sparkles": {
+    "count": 40,
+    "scale": 2,
+    "size": 0.01,
+    "speed": 0.15,
+    "color": "#ff6b4a",
+    "opacity": 0.12
+  },
+  "camera": {
+    "defaultPosition": [3.2, 0.35, 5],
+    "defaultTarget": [0, 0.05, 0],
+    "animationDuration": 1.2,
+    "resetDuration": 1,
+    "orbitControls": {
+      "minDistance": 1.5,
+      "maxDistance": 7,
+      "zoomSpeed": 0.25,
+      "rotateSpeed": 0.45,
+      "autoRotateSpeed": 0.18,
+      "dampingFactor": 0.08,
+      "minPolarAngleDeg": 55,
+      "maxPolarAngleDeg": 85
+    },
+    "zoomPresets": [
+      {
+        "id": "default",
+        "label": "Full Car Showcase",
+        "position": [3.2, 0.35, 5],
+        "target": [0, 0.05, 0]
+      },
+      {
+        "id": "close",
+        "label": "Close Cinematic View",
+        "position": [2.1, 0.35, 3],
+        "target": [0, 0.05, 0.2]
+      },
+      {
+        "id": "wide",
+        "label": "Wide Showcase View",
+        "position": [4.5, 1.0, 6],
+        "target": [0, 0, 0]
+      }
+    ]
+  },
+  "xray": {
+    "wireframeColor": "#4488ff",
+    "opacity": 0.35
+  },
+  "colorTheme": {
+    "metalnessBoost": 0.1,
+    "roughnessReduce": 0.05,
+    "skipColors": ["#000000", "#0a0a0a", "#111111"]
+  }
+}

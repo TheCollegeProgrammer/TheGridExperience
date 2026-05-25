@@ -13,6 +13,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 const PINNED_HEIGHT = 300;
 
+const bgImages = Array.from({ length: 9 }, (_, i) => `/img/section-5-img/bg-img${i + 1}.jpg`);
+
+function getRandomBg(exclude?: string) {
+  const pool = exclude ? bgImages.filter((img) => img !== exclude) : bgImages;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 export default function FestivalSection() {
   const sectionRef = useSectionSnap("festival", 4);
   const pinRef = useRef<HTMLDivElement>(null);
@@ -20,6 +27,8 @@ export default function FestivalSection() {
   const nextBgRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState(0);
+  const [prevBg, setPrevBg] = useState(getRandomBg());
+  const [nextBg, setNextBg] = useState(getRandomBg());
   const active = tracks[activeIndex];
 
   const setActive = useCallback((index: number) => {
@@ -60,6 +69,12 @@ export default function FestivalSection() {
   }, [sectionRef]);
 
   useEffect(() => {
+    const newBg = getRandomBg(nextBg);
+    setPrevBg(nextBg);
+    setNextBg(newBg);
+  }, [activeIndex]);
+
+  useEffect(() => {
     if (!nextBgRef.current || !bgRef.current) return;
 
     gsap.set(nextBgRef.current, { opacity: 0 });
@@ -88,25 +103,30 @@ export default function FestivalSection() {
         <div className="absolute inset-0">
           <div
             ref={bgRef}
-            className={`absolute inset-0 bg-gradient-to-br ${tracks[prevIndex].bgGradient}`}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${prevBg})` }}
           />
           <div
             ref={nextBgRef}
-            className={`absolute inset-0 bg-gradient-to-br ${active.bgGradient}`}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${nextBg})` }}
           />
         </div>
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/60" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.5)_100%)]" />
 
-        <div className="relative z-10 w-full min-h-screen flex flex-col justify-center px-8 md:px-16 lg:px-24 py-32">
-          <CinematicHeading
-            label="Race Weekend"
-            title="The Festival of Speed"
-            subtitle="Temples of speed across the globe, each with its own soul."
-          />
+        <div className="relative z-10 w-full min-h-screen flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-48 pb-32">
+          <div className="flex flex-col">
+            <div style={{ height: "40px" }} />
+            <CinematicHeading
+              label="Race Weekend"
+              title="The Festival of Speed"
+              subtitle="Temples of speed across the globe, each with its own soul."
+            />
+          </div>
 
-          <div className="flex-1 flex items-center mt-16 lg:mt-24">
+          <div className="flex items-center mt-16 lg:mt-24">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active.id}
@@ -117,7 +137,7 @@ export default function FestivalSection() {
                 transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
               >
                 {/* Left: Track Map */}
-                <GlassCard className="flex-1 w-full max-w-lg aspect-[4/3] flex items-center justify-center overflow-hidden p-0">
+                <GlassCard className="flex-1 w-full max-w-lg  flex items-center justify-center overflow-hidden p-0">
                   <div className="relative w-full h-full flex items-center justify-center bg-black/40">
                     <img
                       src={active.mapImage}
@@ -128,7 +148,7 @@ export default function FestivalSection() {
                 </GlassCard>
 
                 {/* Right: Track Info */}
-                <div className="flex-1 max-w-md space-y-6">
+                <div className="flex-1 max-w-md space-y-6 bg-black/60 rounded-2xl" style={{ padding: "10px" }}>
                   <motion.h3
                     className="text-4xl md:text-5xl font-bold text-white tracking-tight"
                     initial={{ opacity: 0, y: 20 }}
@@ -148,7 +168,7 @@ export default function FestivalSection() {
 
                   {/* Dynamic stats table */}
                   <motion.div
-                    className="glass rounded-2xl p-6 space-y-3"
+                    className="space-y-3"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6, delay: 0.4 }}
@@ -169,7 +189,7 @@ export default function FestivalSection() {
           </div>
 
           {/* Bottom GP Navigation */}
-          <div className="flex items-center justify-center gap-8 mt-16">
+          <div className="flex items-center justify-center gap-8">
             {tracks.map((t, i) => (
               <button
                 key={t.id}

@@ -139,7 +139,7 @@ export default function TransformationSection() {
       trigger: sectionRef.current,
       pin: pinRef.current,
       start: "top top",
-      end: "bottom top",
+      end: "bottom bottom",
       anticipatePin: 1,
       scrub: true,
       invalidateOnRefresh: true,
@@ -194,7 +194,7 @@ export default function TransformationSection() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
 
           <div className="relative h-full w-full px-8 md:px-16 lg:px-24">
-            <div className="pt-24 md:pt-32">
+            <div className="absolute top-32 left-4 md:left-8 lg:left-12 right-8 md:right-16 lg:right-24 [&_h2]:text-4xl [&_h2]:md:text-6xl [&_h2]:lg:text-7xl">
               <CinematicHeading
                 label="The Transformation"
                 title="Deconstructing"

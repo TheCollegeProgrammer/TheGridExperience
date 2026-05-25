@@ -1,145 +1,265 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo, useCallback } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useGLTF, Sparkles, ContactShadows, MeshReflectorMaterial } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
+import gsap from "gsap";
+import cfg from "@/config/lights.json";
 
-export default function F1Car() {
+const degToRad = (deg: number) => deg * (Math.PI / 180);
+
+const orbit = cfg.camera.orbitControls;
+const ZOOM_PRESETS: { pos: [number, number, number]; target: [number, number, number] }[] =
+  cfg.camera.zoomPresets.map((p) => ({
+    pos: p.position as [number, number, number],
+    target: p.target as [number, number, number],
+  }));
+
+interface F1CarProps {
+  autoRotate: boolean;
+  xrayMode: boolean;
+  zoomLevel: number;
+  colorTheme: number | null;
+  resetCount: number;
+  entered: boolean;
+}
+
+export default function F1Car({ autoRotate, xrayMode, zoomLevel, colorTheme, resetCount, entered }: F1CarProps) {
+  const { scene: originalScene } = useGLTF("/models/f1_car.glb");
+  const scene = useMemo(() => originalScene.clone(), [originalScene]);
   const groupRef = useRef<THREE.Group>(null);
+  const controlsRef = useRef<OrbitControlsImpl>(null);
   const { camera } = useThree();
+  const matStates = useRef<Map<THREE.Mesh, { wireframe: boolean; transparent: boolean; opacity: number }>>(new Map());
+  const entranceProgress = useRef(0);
+
+  const storeMatStates = useCallback(() => {
+    const map = new Map<THREE.Mesh, { wireframe: boolean; transparent: boolean; opacity: number }>();
+    scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        if (child.material && !Array.isArray(child.material)) {
+          map.set(child, {
+            wireframe: child.material.wireframe,
+            transparent: child.material.transparent,
+            opacity: child.material.opacity,
+          });
+        }
+      }
+    });
+    matStates.current = map;
+  }, [scene]);
+
+  useEffect(() => { storeMatStates(); }, [storeMatStates]);
 
   useEffect(() => {
-    camera.position.set(2.5, 0.8, 3.5);
-    camera.lookAt(0, 0, 0);
+    scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        if (child.material && !Array.isArray(child.material)) {
+          child.material.clearcoat = 1;
+          child.material.clearcoatRoughness = 0.18;
+          child.material.envMapIntensity = 1.4;
+        }
+      }
+    });
+  }, [scene]);
+
+  useEffect(() => {
+    if (groupRef.current) {
+      gsap.from(groupRef.current.scale, {
+        x: 0.52,
+        y: 0.52,
+        z: 0.52,
+        duration: 1.8,
+        ease: "expo.out",
+      });
+    }
   }, []);
+
+  const applyXray = useCallback((on: boolean) => {
+    const x = cfg.xray;
+    scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        if (child.material && !Array.isArray(child.material)) {
+          if (on) {
+            child.material.wireframe = true;
+            child.material.transparent = true;
+            child.material.opacity = 0.22;
+            child.material.emissive.set(x.wireframeColor);
+            child.material.emissiveIntensity = 0.8;
+          } else {
+            const saved = matStates.current.get(child);
+            if (saved) {
+              child.material.wireframe = saved.wireframe;
+              child.material.transparent = saved.transparent;
+              child.material.opacity = saved.opacity;
+            }
+          }
+          child.material.needsUpdate = true;
+        }
+      }
+    });
+  }, [scene]);
+
+  useEffect(() => { applyXray(xrayMode); }, [xrayMode, applyXray]);
+
+  const applyColorTheme = useCallback((hex: number | null) => {
+    if (hex === null) return;
+    const t = cfg.colorTheme;
+    const skip = t.skipColors.map((c) => parseInt(c.replace("#", ""), 16));
+    scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        const mat = child.material as THREE.MeshStandardMaterial;
+        if (!mat || Array.isArray(child.material)) return;
+        if (skip.includes(mat.color.getHex())) return;
+        mat.color.setHex(hex);
+        mat.metalness = Math.min(1, mat.metalness + t.metalnessBoost);
+        mat.roughness = Math.max(0.1, mat.roughness - t.roughnessReduce);
+        mat.needsUpdate = true;
+      }
+    });
+  }, [scene]);
+
+  useEffect(() => { applyColorTheme(colorTheme); }, [colorTheme, applyColorTheme]);
+
+  const animateCamera = useCallback((pos: [number, number, number], target: [number, number, number], duration?: number) => {
+    const d = duration ?? cfg.camera.animationDuration;
+    gsap.to(camera.position, {
+      x: pos[0], y: pos[1], z: pos[2],
+      duration: d,
+      ease: "power3.inOut",
+      overwrite: "auto",
+    });
+    if (controlsRef.current) {
+      gsap.to(controlsRef.current.target, {
+        x: target[0], y: target[1], z: target[2],
+        duration: d,
+        ease: "power3.inOut",
+        overwrite: "auto",
+      });
+    }
+  }, [camera]);
+
+  useEffect(() => {
+    const preset = ZOOM_PRESETS[zoomLevel];
+    animateCamera(preset.pos, preset.target);
+  }, [zoomLevel, animateCamera]);
+
+  useEffect(() => {
+    if (resetCount === 0) return;
+    const preset = ZOOM_PRESETS[0];
+    animateCamera(preset.pos, preset.target, cfg.camera.resetDuration);
+    if (controlsRef.current) {
+      controlsRef.current.minDistance = orbit.minDistance;
+      controlsRef.current.maxDistance = orbit.maxDistance;
+    }
+  }, [resetCount, camera, animateCamera]);
+
+  useEffect(() => {
+    const def = cfg.camera.defaultPosition as [number, number, number];
+    const tgt = cfg.camera.defaultTarget as [number, number, number];
+    camera.position.set(...def);
+    camera.lookAt(...tgt);
+  }, [camera]);
+
+  const carCfg = cfg.car;
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
+
+    if (entered) {
+      entranceProgress.current = Math.min(1, entranceProgress.current + delta * carCfg.entrance.riseSpeed);
+    }
+
     const t = state.clock.elapsedTime;
-    groupRef.current.position.y = Math.sin(t * 0.5) * 0.03;
-    groupRef.current.rotation.z = Math.sin(t * 0.3) * 0.01;
+
+    groupRef.current.position.y = THREE.MathUtils.lerp(
+      groupRef.current.position.y,
+      -0.85,
+      0.04
+    );
+
+    groupRef.current.rotation.z = Math.sin(t * 0.12) * 0.0015;
+    groupRef.current.rotation.x = 0;
   });
+
+  const lights = cfg.lights;
 
   return (
     <>
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[3, 3, 3]} intensity={0.8} />
-      <directionalLight position={[-3, 2, -1]} intensity={0.4} color="#e10600" />
-      <directionalLight position={[0, -1, 2]} intensity={0.2} color="#ffffff" />
-      <hemisphereLight args={["#222", "#000", 0.3]} />
+      <ambientLight intensity={lights.ambient.intensity} />
 
-      <group ref={groupRef} position={[0, -0.15, 0]}>
-        {/* Chassis */}
-        <mesh position={[0, 0.15, 0]}>
-          <boxGeometry args={[0.7, 0.12, 1.8]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.2} />
-        </mesh>
+      {lights.directional.map((l) => (
+        <directionalLight
+          key={l.id}
+          position={l.position as [number, number, number]}
+          intensity={l.intensity}
+          color={l.color}
+        />
+      ))}
 
-        {/* Cockpit */}
-        <mesh position={[0, 0.28, 0.15]}>
-          <boxGeometry args={[0.4, 0.1, 0.55]} />
-          <meshStandardMaterial color="#111" metalness={0.7} roughness={0.3} />
-        </mesh>
-
-        {/* Front nose cone */}
-        <mesh position={[0, 0.1, 1.05]}>
-          <coneGeometry args={[0.12, 0.4, 6]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.2} />
-        </mesh>
-
-        {/* Rear wing */}
-        <mesh position={[0, 0.38, -0.95]}>
-          <boxGeometry args={[0.6, 0.02, 0.25]} />
-          <meshStandardMaterial color="#222" metalness={0.9} roughness={0.15} />
-        </mesh>
-        <mesh position={[0, 0.28, -0.95]}>
-          <boxGeometry args={[0.55, 0.08, 0.02]} />
-          <meshStandardMaterial color="#222" metalness={0.9} roughness={0.15} />
-        </mesh>
-
-        {/* Front wing */}
-        <mesh position={[0, 0.06, 1.2]}>
-          <boxGeometry args={[0.55, 0.02, 0.15]} />
-          <meshStandardMaterial color="#222" metalness={0.9} roughness={0.15} />
-        </mesh>
-        <mesh position={[0, 0.1, 1.15]}>
-          <boxGeometry args={[0.3, 0.04, 0.02]} />
-          <meshStandardMaterial color="#222" metalness={0.9} roughness={0.15} />
-        </mesh>
-
-        {/* Sidepod - left */}
-        <mesh position={[-0.35, 0.12, 0.1]}>
-          <boxGeometry args={[0.12, 0.08, 0.6]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.8} roughness={0.3} />
-        </mesh>
-        {/* Sidepod - right */}
-        <mesh position={[0.35, 0.12, 0.1]}>
-          <boxGeometry args={[0.12, 0.08, 0.6]} />
-          <meshStandardMaterial color="#1a1a1a" metalness={0.8} roughness={0.3} />
-        </mesh>
-
-        {/* Front wheels */}
-        {[-0.38, 0.38].map((x) => (
-          <group key={x}>
-            <mesh position={[x, 0.08, 0.65]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.13, 0.13, 0.08, 20]} />
-              <meshStandardMaterial color="#0a0a0a" metalness={0.3} roughness={0.9} />
-            </mesh>
-            <mesh position={[x, 0.08, 0.65]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.06, 0.06, 0.09, 12]} />
-              <meshStandardMaterial color="#333" metalness={0.8} roughness={0.2} />
-            </mesh>
-          </group>
-        ))}
-
-        {/* Rear wheels */}
-        {[-0.42, 0.42].map((x) => (
-          <group key={x}>
-            <mesh position={[x, 0.08, -0.65]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.16, 0.16, 0.1, 20]} />
-              <meshStandardMaterial color="#0a0a0a" metalness={0.3} roughness={0.9} />
-            </mesh>
-            <mesh position={[x, 0.08, -0.65]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.07, 0.07, 0.11, 12]} />
-              <meshStandardMaterial color="#333" metalness={0.8} roughness={0.2} />
-            </mesh>
-          </group>
-        ))}
-
-        {/* Halo */}
-        <mesh position={[0, 0.42, 0.2]} rotation={[0.25, 0, 0]}>
-          <torusGeometry args={[0.22, 0.015, 10, 20, Math.PI * 1.2]} />
-          <meshStandardMaterial color="#333" metalness={0.8} roughness={0.3} />
-        </mesh>
-
-        {/* Engine cover - small T-cam */}
-        <mesh position={[0, 0.35, -0.2]}>
-          <boxGeometry args={[0.15, 0.06, 0.2]} />
-          <meshStandardMaterial color="#e10600" metalness={0.3} roughness={0.6} />
-        </mesh>
-
-        {/* Floor/undertray */}
-        <mesh position={[0, 0.02, 0.05]}>
-          <boxGeometry args={[0.5, 0.02, 1.5]} />
-          <meshStandardMaterial color="#111" metalness={0.5} roughness={0.8} />
-        </mesh>
-      </group>
-
-      <OrbitControls
-        enablePan={false}
-        enableZoom={true}
-        zoomSpeed={0.5}
-        rotateSpeed={0.4}
-        minPolarAngle={Math.PI / 3}
-        maxPolarAngle={Math.PI / 2.2}
-        minDistance={2}
-        maxDistance={6}
-        autoRotate={false}
-        target={[0, 0, 0]}
+      <hemisphereLight
+        args={[
+          lights.hemisphere.skyColor,
+          lights.hemisphere.groundColor,
+          lights.hemisphere.intensity,
+        ]}
       />
 
-      <fog attach="fog" args={["#000", 4, 12]} />
+      <group ref={groupRef} scale={0.58} position={[0, -0.85, 0]}>
+        <primitive object={scene} />
+        <Sparkles
+          count={40}
+          speed={0.12}
+          size={1}
+          opacity={0.12}
+        />
+      </group>
+
+      <ContactShadows
+        position={[0, -1.2, 0]}
+        opacity={0.42}
+        scale={12}
+        blur={2.8}
+        far={4.5}
+      />
+
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.15, 0]}>
+        <planeGeometry args={[30, 30]} />
+        <MeshReflectorMaterial
+          blur={[300, 80]}
+          resolution={1024}
+          mixBlur={1}
+          mixStrength={18}
+          roughness={0.55}
+          depthScale={1}
+          minDepthThreshold={0.4}
+          color="#050505"
+          metalness={0.45}
+        />
+      </mesh>
+
+      <OrbitControls
+        ref={controlsRef}
+        makeDefault
+        enablePan={false}
+        enableZoom={true}
+        enableRotate={true}
+        zoomSpeed={orbit.zoomSpeed}
+        rotateSpeed={0.45}
+        minPolarAngle={degToRad(orbit.minPolarAngleDeg)}
+        maxPolarAngle={degToRad(orbit.maxPolarAngleDeg)}
+        minDistance={orbit.minDistance}
+        maxDistance={orbit.maxDistance}
+        autoRotate={autoRotate}
+        autoRotateSpeed={0.18}
+        target={[0, -0.2, 0]}
+        dampingFactor={orbit.dampingFactor}
+        enableDamping={true}
+      />
+
+      <fog attach="fog" args={[cfg.fog.color, cfg.fog.near, cfg.fog.far]} />
     </>
   );
 }
