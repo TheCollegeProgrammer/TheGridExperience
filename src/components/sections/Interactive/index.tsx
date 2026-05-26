@@ -8,7 +8,7 @@ import DevGarage from "./DevGarage";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const PINNED_HEIGHT = 300;
+const PINNED_HEIGHT = 200;
 
 export default function InteractiveSection() {
   const sectionRef = useSectionSnap("interactive", 5);
@@ -20,7 +20,7 @@ export default function InteractiveSection() {
     const st = ScrollTrigger.create({
       trigger: sectionRef.current,
       pin: pinRef.current,
-      start: "top top",
+      start: "top top+=60",
       end: "bottom top",
       anticipatePin: 1,
       scrub: true,
