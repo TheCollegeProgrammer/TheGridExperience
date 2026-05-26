@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useSectionSnap } from "@/hooks/useSectionSnap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import gsap from "gsap";
+import DevGarage from "./DevGarage";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,10 +37,12 @@ export default function InteractiveSection() {
       ref={sectionRef}
       id="interactive"
       data-section-index={5}
-      className="relative bg-black select-none"
+      className="relative bg-[#050505] select-none"
       style={{ height: `${PINNED_HEIGHT}vh` }}
     >
-      <div ref={pinRef} className="absolute inset-0 h-screen w-full" />
+      <div ref={pinRef} className="absolute inset-0 h-screen w-full">
+        <DevGarage />
+      </div>
     </div>
   );
 }
