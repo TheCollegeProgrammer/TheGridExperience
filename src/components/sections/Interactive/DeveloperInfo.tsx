@@ -32,13 +32,19 @@ function DeveloperLogo() {
   );
 }
 
-function SocialButton({ href, label }: { href: string; label: string }) {
+function SocialButton({ href, label }: { href?: string; label: string }) {
+  const baseClass = "flex items-center justify-center gap-2 px-5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-white/60 font-mono tracking-wider hover:bg-white/[0.06] hover:border-white/[0.12] hover:text-white/90 transition-all duration-500";
+
+  if (!href) {
+    return <button className={baseClass}>{label}</button>;
+  }
+
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-2 px-5 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-white/60 font-mono tracking-wider hover:bg-white/[0.06] hover:border-white/[0.12] hover:text-white/90 transition-all duration-500"
+      className={baseClass}
     >
       {label}
     </a>
@@ -47,7 +53,7 @@ function SocialButton({ href, label }: { href: string; label: string }) {
 
 function ToolPill({ name }: { name: string }) {
   return (
-    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/[0.02] border border-white/[0.04] text-[9px] font-mono text-zinc-500 hover:bg-white/[0.04] hover:border-white/[0.08] hover:text-zinc-300 transition-all duration-300 cursor-default">
+    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/[0.02] border border-white/[0.04] text-xs font-mono text-white/70 hover:bg-white/[0.04] hover:border-white/[0.08] hover:text-white transition-all duration-300 cursor-default">
       {name}
     </div>
   );
@@ -59,7 +65,7 @@ export default function DeveloperInfo() {
       initial={{ opacity: 0, x: -30 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-      className="relative flex flex-col h-full w-[20%] min-w-[280px] bg-[#050505]/80 border-r border-white/[0.02] overflow-y-auto"
+      className="relative flex flex-col h-full w-[20%] min-w-[280px] bg-[#050505]/40 border-r border-white/[0.02] overflow-y-auto"
     >
       <div className="absolute inset-y-0 -right-px w-px bg-gradient-to-b from-white/[0.06] via-white/[0.02] to-transparent pointer-events-none" />
 
@@ -72,7 +78,7 @@ export default function DeveloperInfo() {
           transition={{ duration: 0.6, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-3xl font-bold tracking-tight text-white text-center"
         >
-          Devansh Avchat
+          TheCollegeProgrammer
         </motion.h1>
 
         <motion.p
@@ -88,7 +94,7 @@ export default function DeveloperInfo() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-[11px] text-zinc-500 leading-relaxed text-center px-2"
+          className="text-sm text-white/90 leading-relaxed text-center px-2"
         >
           I build intelligent, data-driven digital experiences that merge engineering precision with cinematic interaction.
         </motion.p>
@@ -99,7 +105,7 @@ export default function DeveloperInfo() {
           transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
           className="flex justify-center gap-2"
         >
-          <SocialButton href="https://linkedin.com/in/devansh-avchat" label="LinkedIn" />
+          <SocialButton label="LinkedIn" />
           <SocialButton href="https://github.com/devansh-avchat" label="GitHub" />
         </motion.div>
 
@@ -108,7 +114,7 @@ export default function DeveloperInfo() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <p className="font-mono text-[8px] tracking-[0.3em] uppercase text-zinc-600 mb-2.5 text-center">
+          <p className="font-mono text-xs tracking-[0.3em] uppercase text-white/70 mb-2.5 text-center">
             {'\u2014'} Build Tools
           </p>
           <div className="grid grid-cols-2 gap-1.5">
