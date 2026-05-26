@@ -30,9 +30,11 @@ export default function ExhaustParticles() {
   }, [positions, opacities, sizes]);
 
   useFrame((_, delta) => {
-    const pos = geometry.attributes.position.array as Float32Array;
-    const op = geometry.attributes.opacity.array as Float32Array;
-    const sz = geometry.attributes.size.array as Float32Array;
+    const geo = pointsRef.current?.geometry;
+    if (!geo) return;
+    const pos = geo.attributes.position.array as Float32Array;
+    const op = geo.attributes.opacity.array as Float32Array;
+    const sz = geo.attributes.size.array as Float32Array;
 
     for (let i = 0; i < config.count; i++) {
       if (!particles.current[i]) {
@@ -85,9 +87,9 @@ export default function ExhaustParticles() {
       sz[i] = config.size * (0.5 + lifeRatio * 0.5);
     }
 
-    geometry.attributes.position.needsUpdate = true;
-    geometry.attributes.opacity.needsUpdate = true;
-    geometry.attributes.size.needsUpdate = true;
+    geo.attributes.position.needsUpdate = true;
+    geo.attributes.opacity.needsUpdate = true;
+    geo.attributes.size.needsUpdate = true;
   });
 
   return (

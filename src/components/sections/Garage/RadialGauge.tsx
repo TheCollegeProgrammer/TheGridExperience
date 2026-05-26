@@ -24,10 +24,15 @@ export default function RadialGauge({
 }: RadialGaugeProps) {
   const [animated, setAnimated] = useState(0);
   const rafRef = useRef<number>(0);
+  const startValRef = useRef(0);
+
+  useEffect(() => {
+    startValRef.current = animated;
+  });
 
   useEffect(() => {
     const startTime = performance.now();
-    const startVal = animated;
+    const startVal = startValRef.current;
 
     function tick(now: number) {
       const elapsed = now - startTime;
@@ -36,6 +41,8 @@ export default function RadialGauge({
       setAnimated(startVal + (value / max) * eased);
       if (progress < 1) {
         rafRef.current = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafRef.current);
       }
     }
 

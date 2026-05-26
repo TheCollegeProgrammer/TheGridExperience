@@ -23,7 +23,6 @@ export default function HeroSection() {
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover opacity-40"
-          poster="/textures/hero-fallback.jpg"
         >
           <source src="/videos/Section-1-clip.mp4" type="video/mp4" />
         </video>

@@ -4,12 +4,14 @@ import { Canvas } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import { Suspense } from "react";
 
+type EnvironmentPreset = "sunset" | "dawn" | "night" | "warehouse" | "forest" | "apartment" | "studio" | "city" | "park" | "lobby";
+
 interface SceneCanvasProps {
   children: React.ReactNode;
   cameraPosition?: [number, number, number];
   className?: string;
   interactive?: boolean;
-  environmentPreset?: string;
+  environmentPreset?: EnvironmentPreset;
 }
 
 function SceneFallback() {
@@ -36,7 +38,7 @@ export default function SceneCanvas({ children, cameraPosition = [0, 0, 5], clas
       >
         <Suspense fallback={<SceneFallback />}>
           {children}
-          <Environment preset={environmentPreset as any} />
+          <Environment preset={environmentPreset ?? "night"} />
         </Suspense>
       </Canvas>
     </div>

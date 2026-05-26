@@ -7,8 +7,6 @@ import { useLenis } from "./useLenis";
 const STEP_SECTIONS_START = 2;
 const STEP_COUNT = 4;
 const SNAP_COOLDOWN_MS = 1500;
-const CENTER_MODE_IDLE_FRAMES = 5;
-
 function useMagneticScroll() {
   const { sections, snapToSection, isSnapping, activeIndex } = useScrollContext();
   const lenis = useLenis();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import cfg from "@/config/lights.json";
@@ -9,8 +9,9 @@ export default function SpeedLines() {
   const config = cfg.speedLines;
   const lineRef = useRef<THREE.LineSegments>(null);
   const t = useRef(0);
+  const [geometry, setGeometry] = useState<THREE.BufferGeometry | null>(null);
 
-  const geometry = useMemo(() => {
+  useEffect(() => {
     const positions = new Float32Array(config.count * 6);
     for (let i = 0; i < config.count; i++) {
       const angle = (i / config.count) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
@@ -32,7 +33,8 @@ export default function SpeedLines() {
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    return geo;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGeometry(geo);
   }, [config.count, config.radius, config.length]);
 
   useFrame((_, delta) => {
@@ -41,6 +43,8 @@ export default function SpeedLines() {
       lineRef.current.rotation.y += delta * 0.15;
     }
   });
+
+  if (!geometry) return null;
 
   return (
     <lineSegments ref={lineRef} geometry={geometry}>

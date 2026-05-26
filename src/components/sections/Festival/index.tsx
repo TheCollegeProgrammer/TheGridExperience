@@ -13,7 +13,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const PINNED_HEIGHT = 300;
 
-const bgImages = Array.from({ length: 9 }, (_, i) => `/img/section-5-img/bg-img${i + 1}.jpg`);
+const bgImages = Array.from({ length: 9 }, (_, i) => `/img/Section-5-img/bg-img${i + 1}.jpg`);
 
 function getRandomBg(exclude?: string) {
   const pool = exclude ? bgImages.filter((img) => img !== exclude) : bgImages;
@@ -23,27 +23,21 @@ function getRandomBg(exclude?: string) {
 export default function FestivalSection() {
   const sectionRef = useSectionSnap("festival", 4);
   const pinRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const nextBgRef = useRef<HTMLDivElement>(null);
+  const bgElRef = useRef<HTMLDivElement>(null);
+  const nextBgElRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [prevIndex, setPrevIndex] = useState(0);
-  const [prevBg, setPrevBg] = useState(getRandomBg());
-  const [nextBg, setNextBg] = useState(getRandomBg());
+  const [prevBg, setPrevBg] = useState(getRandomBg);
+  const [nextBg, setNextBg] = useState(getRandomBg);
   const active = tracks[activeIndex];
 
   const setActive = useCallback((index: number) => {
     if (index === activeIndex) return;
-    setPrevIndex(activeIndex);
     setActiveIndex(index);
   }, [activeIndex]);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIndex((p) => {
-        const next = (p + 1) % tracks.length;
-        setPrevIndex(p);
-        return next;
-      });
+      setActiveIndex((p) => (p + 1) % tracks.length);
     }, 5000);
     return () => clearInterval(timer);
   }, []);
@@ -68,18 +62,26 @@ export default function FestivalSection() {
     };
   }, [sectionRef]);
 
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
+    if (!nextBgElRef.current || !bgElRef.current) return;
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      gsap.set(nextBgElRef.current, { opacity: 0 });
+      gsap.to(nextBgElRef.current, { opacity: 1, duration: 1.2, ease: "power2.inOut" });
+      gsap.to(bgElRef.current, { opacity: 0, duration: 1.2, ease: "power2.inOut" });
+      return;
+    }
+
     const newBg = getRandomBg(nextBg);
     setPrevBg(nextBg);
     setNextBg(newBg);
-  }, [activeIndex]);
-
-  useEffect(() => {
-    if (!nextBgRef.current || !bgRef.current) return;
-
-    gsap.set(nextBgRef.current, { opacity: 0 });
-    gsap.to(nextBgRef.current, { opacity: 1, duration: 1.2, ease: "power2.inOut" });
-    gsap.to(bgRef.current, { opacity: 0, duration: 1.2, ease: "power2.inOut" });
+    gsap.set(nextBgElRef.current, { opacity: 0 });
+    gsap.to(nextBgElRef.current, { opacity: 1, duration: 1.2, ease: "power2.inOut" });
+    gsap.to(bgElRef.current, { opacity: 0, duration: 1.2, ease: "power2.inOut" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeIndex]);
 
   const statItems = [
@@ -102,13 +104,13 @@ export default function FestivalSection() {
         {/* Dynamic background layer */}
         <div className="absolute inset-0">
           <div
-            ref={bgRef}
-            className="absolute inset-0 bg-cover bg-center"
+            ref={bgElRef}
+            className="absolute inset-0 bg-cover bg-center bg-zinc-900"
             style={{ backgroundImage: `url(${prevBg})` }}
           />
           <div
-            ref={nextBgRef}
-            className="absolute inset-0 bg-cover bg-center"
+            ref={nextBgElRef}
+            className="absolute inset-0 bg-cover bg-center bg-zinc-900"
             style={{ backgroundImage: `url(${nextBg})` }}
           />
         </div>
@@ -143,6 +145,9 @@ export default function FestivalSection() {
                       src={active.mapImage}
                       alt={`${active.name} circuit map`}
                       className="w-full h-full object-contain p-4 md:p-6"
+                      loading="lazy"
+                      decoding="async"
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
                 </GlassCard>

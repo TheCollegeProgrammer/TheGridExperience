@@ -21,7 +21,7 @@ interface PartHotspotsProps {
 export default function PartHotspots({ scene }: PartHotspotsProps) {
   const { camera, pointer } = useThree();
   const [hovered, setHovered] = useState<HotspotPart | null>(null);
-  const [hitMesh, setHitMesh] = useState<THREE.Mesh | null>(null);
+  const hitMeshRef = useRef<THREE.Mesh | null>(null);
   const raycaster = useRef(new THREE.Raycaster());
   const dotRefs = useRef<(THREE.Mesh | null)[]>([]);
   const hotspots = cfg.hotspots.parts as HotspotPart[];
@@ -53,9 +53,9 @@ export default function PartHotspots({ scene }: PartHotspotsProps) {
       }
     }
 
-    if (foundMesh !== hitMesh) {
-      if (hitMesh) {
-        const mat = hitMesh.material as THREE.MeshStandardMaterial;
+    if (foundMesh !== hitMeshRef.current) {
+      if (hitMeshRef.current) {
+        const mat = hitMeshRef.current.material as THREE.MeshStandardMaterial;
         if (mat && !Array.isArray(mat)) {
           mat.emissive.set("#000000");
           mat.emissiveIntensity = 0;
@@ -68,7 +68,7 @@ export default function PartHotspots({ scene }: PartHotspotsProps) {
           mat.emissiveIntensity = 0.3;
         }
       }
-      setHitMesh(foundMesh);
+      hitMeshRef.current = foundMesh;
     }
 
     if (found) {
