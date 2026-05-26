@@ -7,6 +7,7 @@ import { ScrollProvider } from "@/providers/ScrollProvider";
 import { MagneticScrollGuard } from "@/hooks/useMagneticScroll";
 import { useSectionSnap } from "@/hooks/useSectionSnap";
 import { HeroSection } from "@/components/sections";
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const TransformationSection = dynamic(
   () => import("@/components/sections").then((m) => ({ default: m.TransformationSection })),
@@ -59,6 +60,7 @@ export default function Home() {
           <GarageSection />
           <FestivalSection />
           <InteractiveSection />
+          <SpeedInsights />
         </main>
       </ScrollProvider>
     </SmoothScrollProvider>
