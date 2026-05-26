@@ -11,13 +11,13 @@ const tools = [
 
 function DeveloperLogo() {
   return (
-    <div className="relative w-[140px] h-[140px] mx-auto flex items-center justify-center">
+    <div className="relative w-[200px] h-[200px] mx-auto flex items-center justify-center" style={{ transform: 'translateX(45px)' }}>
       <div className="absolute inset-0 rounded-full border border-white/[0.08] animate-spin-slow" />
-      <div className="absolute inset-[12px] rounded-full border border-white/5 animate-spin-reverse" />
+      <div className="absolute inset-[16px] rounded-full border border-white/5 animate-spin-reverse" />
 
-      <div className="absolute w-1 h-1 rounded-full bg-white/40 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse-glow" />
+      <div className="absolute w-1.5 h-1.5 rounded-full bg-white/40 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse-glow" />
 
-      <div className="relative w-[100px] h-[100px] rounded-full overflow-hidden border border-white/5">
+      <div className="relative w-[150px] h-[150px] rounded-full overflow-hidden border border-white/5">
         <Image
           src="/img/Section-6-img/user-logo.png"
           alt="Developer"
@@ -65,18 +65,18 @@ export default function DeveloperInfo() {
       initial={{ opacity: 0, x: -30 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-      className="relative flex flex-col h-full w-[20%] min-w-[280px] bg-[#050505]/40 border-r border-white/[0.02] overflow-y-auto"
+      className="relative z-50 flex flex-col h-full w-[20%] min-w-[350px] bg-[#050505] border-r border-white/[0.02] overflow-x-visible overflow-y-auto"
     >
       <div className="absolute inset-y-0 -right-px w-px bg-gradient-to-b from-white/[0.06] via-white/[0.02] to-transparent pointer-events-none" />
 
-      <div className="flex flex-col flex-1 px-6 pt-6 pb-2 gap-4">
+      <div className="flex flex-col flex-1 px-6 pt-6 pb-2 gap-3">
         <DeveloperLogo />
 
         <motion.h1
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-3xl font-bold tracking-tight text-white text-center"
+          className="relative text-3xl font-bold tracking-tight text-white text-center z-30 mt-2 break-all"
         >
           TheCollegeProgrammer
         </motion.h1>
@@ -106,7 +106,7 @@ export default function DeveloperInfo() {
           className="flex justify-center gap-2"
         >
           <SocialButton label="LinkedIn" />
-          <SocialButton href="https://github.com/devansh-avchat" label="GitHub" />
+          <SocialButton href="https://github.com/TheCollegeProgrammer" label="GitHub" />
         </motion.div>
 
         <motion.div
@@ -114,10 +114,10 @@ export default function DeveloperInfo() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <p className="font-mono text-xs tracking-[0.3em] uppercase text-white/70 mb-2.5 text-center">
-            {'\u2014'} Build Tools
+          <p className="font-mono text-xs tracking-[0.3em] uppercase text-white/70 mb-2.5 text-center" style={{ marginLeft: '-60px' }}>
+            {'\u2014'} Build Tools {'\u2014'}
           </p>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 gap-1.5" style={{ marginLeft: '23px' }}>
             {tools.map((tool) => (
               <ToolPill key={tool} name={tool} />
             ))}

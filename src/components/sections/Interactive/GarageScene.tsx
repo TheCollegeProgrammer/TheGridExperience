@@ -1,14 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { cn } from "@/utils";
 import StatsStrip from "./StatsStrip";
 const hotspotData = [
-  { label: "FRONT WING", desc: "Aerodynamic efficiency", row: 0, side: "right" as const },
-  { label: "HALO", desc: "Driver protection system", row: 1, side: "right" as const },
-  { label: "POWER UNIT", desc: "Hybrid V6 turbo", row: 2, side: "right" as const },
-  { label: "REAR WING", desc: "Downforce generation", row: 0, side: "left" as const },
-  { label: "DIFFUSER", desc: "Underfloor aerodynamics", row: 2, side: "left" as const },
+  { label: "FRONT WING", desc: "Aerodynamic efficiency", row: 2, side: "left" as const, offsetX: 190, offsetY: 140 },
+  { label: "REAR WING", desc: "Downforce generation", row: 1, side: "right" as const, offsetY: -25 },
+  { label: "HALO", desc: "Driver protection system", row: 1, side: "center" as const, offsetY: -40 },
+  { label: "POWER UNIT", desc: "Hybrid V6 turbo", row: 2, side: "right" as const, offsetX: -30 },
 ];
 
 const ROWS = [
@@ -80,11 +80,42 @@ interface HotspotProps {
   label: string;
   desc: string;
   row: number;
-  side: "left" | "right";
+  side: "left" | "right" | "center";
+  offsetX?: number;
+  offsetY?: number;
 }
 
-function HotspotOverlay({ label, desc, row, side }: HotspotProps) {
+function HotspotOverlay({ label, desc, row, side, offsetX, offsetY }: HotspotProps) {
   const rowStyle = ROWS[row];
+  const isCenter = side === "center";
+
+  if (isCenter) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.1 * row, ease: [0.25, 0.1, 0.25, 1] }}
+        className="absolute z-10 left-1/2 -translate-x-1/2"
+        style={{ top: rowStyle.top, ...(offsetY ? { marginTop: `${offsetY}px` } : {}) }}
+      >
+        <div className="flex flex-col items-center gap-1">
+          <div className="relative">
+            <div className="w-1.5 h-1.5 rounded-full bg-white/30" />
+            <div className="absolute -inset-1 rounded-full bg-white/[0.04]" />
+          </div>
+          <div className="w-px h-4 bg-gradient-to-b from-white/[0.06] to-transparent" />
+          <div className="px-4 py-3 rounded-md bg-transparent backdrop-blur-md border border-white/[0.04] w-[150px] transition-all duration-300 hover:border-white/20 group text-center">
+            <p className="text-xs tracking-[0.2em] text-white/60 font-mono group-hover:text-white transition-colors duration-300">
+              {label}
+            </p>
+            <p className="text-[10px] text-zinc-500 font-mono mt-1 leading-relaxed group-hover:text-white/80 transition-colors duration-300">
+              {desc}
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -95,7 +126,7 @@ function HotspotOverlay({ label, desc, row, side }: HotspotProps) {
         "absolute z-10",
         side === "right" ? "right-8" : "left-8"
       )}
-      style={{ top: rowStyle.top }}
+      style={{ top: rowStyle.top, ...(offsetX ? { transform: `translateX(${offsetX}px)` } : {}), ...(offsetY ? { marginTop: `${offsetY}px` } : {}) }}
     >
       <div className={cn(
         "flex items-center gap-0",
@@ -117,13 +148,13 @@ function HotspotOverlay({ label, desc, row, side }: HotspotProps) {
         )} />
 
         <div className={cn(
-          "px-3 py-2.5 rounded-md bg-black/40 backdrop-blur-md border border-white/[0.04] w-[130px]",
+          "px-4 py-3 rounded-md bg-transparent backdrop-blur-md border border-white/[0.04] w-[150px] transition-all duration-300 hover:border-white/20 group",
           side === "right" ? "order-3 text-left" : "order-1 text-right"
         )}>
-          <p className="text-[9px] tracking-[0.2em] text-white/60 font-mono">
+          <p className="text-xs tracking-[0.2em] text-white/60 font-mono group-hover:text-white transition-colors duration-300">
             {label}
           </p>
-          <p className="text-[8px] text-zinc-500 font-mono mt-0.5 leading-relaxed">
+          <p className="text-[10px] text-zinc-500 font-mono mt-1 leading-relaxed group-hover:text-white/80 transition-colors duration-300">
             {desc}
           </p>
         </div>
@@ -158,7 +189,17 @@ function FogFloor() {
 
 export default function GarageScene() {
   return (
-    <div className="relative flex-1 h-full overflow-hidden">
+    <div className="relative flex-1 h-full overflow-hidden bg-[#050505]">
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/img/Section-6-img/bg-image.png"
+          alt="F1 Garage"
+          fill
+          className="object-cover opacity-85"
+          priority
+        />
+      </div>
+
       <VolumetricHaze />
       <FogFloor />
       <RimLightOverlay />
