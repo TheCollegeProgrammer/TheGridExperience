@@ -28,8 +28,8 @@ export default function HeroSection() {
         </video>
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
 
       <div className="relative z-10 h-full flex items-center">
         <div className="px-8 md:px-16 lg:px-24 max-w-7xl w-full">
